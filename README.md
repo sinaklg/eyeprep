@@ -4,6 +4,8 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
 Standardized preprocessing pipeline for BIDS-formatted eye-tracking data.
+-------
+Version 0.01
 
 ## Why This Exists
 
@@ -11,14 +13,23 @@ Eye-tracking is increasingly used in fMRI and cognitive neuroscience, but prepro
 
 **Format your data once with BIDS → Get preprocessing forever**
 
-## Features
+## How It Works (for now)
 
-- Reads BIDS eye-tracking data natively
-- Modular preprocessing steps (blink removal, drift correction, smoothing, etc.)
-- Comprehensive quality control metrics and visualizations
-- Docker container for reproducibility
-- Extensive documentation and tutorials
-- Validated on multiple eye-tracker types
+<p align="center">
+  <img src="docs/images/pipeline.png" alt="eyeprep pipeline" width="650"/>
+</p>
+
+eyeprep takes BIDS-formatted eye-tracking data through a series of validated preprocessing steps, followed by quality assessment to ensure your data is analysis-ready.
+
+### Preprocessing Steps
+- **Blink Removal** → **Interpolation** → **Normalization** → **Drift Correction** → **Smoothing** → **Downsampling**
+
+### Quality Assessment
+- Extracts saccades using 2D velocity algorithm
+- Generates prediction models for task performance
+- Produces individual and group-level quality metrics
+
+[Learn more about each step →](docs/preprocessing.md)
 
 
 ## Documentation (TODO)
