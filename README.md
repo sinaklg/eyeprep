@@ -4,9 +4,10 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
 Standardized preprocessing pipeline for BIDS-formatted eye-tracking data.
-Eyetracking BIDS specification documentation: https://bids-specification.readthedocs.io/en/latest/modality-specific-files/physiological-recordings.html
+
 -------
 Version 0.01
+
 
 ## Installation steps (dependencies)
 
@@ -24,7 +25,8 @@ pip install .
 
 ## Why This Exists
 
-Eye-tracking is increasingly used in fMRI and cognitive neuroscience, but preprocessing is inconsistent. We've created a [BIDS Extension Proposal (BEP20)](link) to standardize eye-tracking data format, and this tool makes that standard immediately useful.
+Eye-tracking is increasingly used in fMRI and cognitive neuroscience, but preprocessing is inconsistent. We've created a [BIDS Extension Proposal (BEP20)](https://bids.neuroimaging.io/extensions/beps/bep_020.html) to standardize eye-tracking data format, and this tool makes that standard immediately useful.
+Eyetracking BIDS specification documentation: https://bids-specification.readthedocs.io/en/latest/modality-specific-files/physiological-recordings.html
 
 **Format your data once with BIDS → Get preprocessing forever**
 
