@@ -4,8 +4,23 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
 Standardized preprocessing pipeline for BIDS-formatted eye-tracking data.
+Eyetracking BIDS specification documentation: https://bids-specification.readthedocs.io/en/latest/modality-specific-files/physiological-recordings.html
 -------
 Version 0.01
+
+## Installation steps (dependencies)
+
+Install SR reseach developers kit: https://www.sr-research.com/support/docs.php?topic=linuxsoftware
+
+```
+git clone https://github.com/bids-standard/eye2bids.git
+
+```
+
+```
+cd eye2bids
+pip install .
+```
 
 ## Why This Exists
 
@@ -38,7 +53,6 @@ eyeprep takes BIDS-formatted eye-tracking data through a series of validated pre
 - [Preprocessing Options](docs/preprocessing.md)
 - [Configuration Files](docs/configuration.md)
 - [Tutorial Notebooks](examples/)
-- [API Reference](docs/api.md)
 
 ## 🤝 Contributing
 

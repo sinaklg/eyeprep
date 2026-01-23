@@ -1,0 +1,16 @@
+{
+    "InstitutionAddress": "str",
+    "InstitutionName": "Institut des Neurosciences de la Timone",
+    "StimulusPresentation": {
+        "ScreenDistance": 1.2,
+        "ScreenRefreshRate": 120,
+        "ScreenSize": [
+            0.696,
+            0.391
+        ],
+        "ScreenResolution": [
+            1919,
+            1079
+        ]
+    }
+}
