@@ -42,62 +42,69 @@ def extract_data(main_dir, project_dir, subject, task, ses, runs, eye, file_type
 
     return df_runs
 
-def extract_eye_data_and_triggers(df_event, df_data, onset_pattern, offset_pattern): 
+def extract_eye_data_and_triggers(df_event, df_data, onset_pattern, offset_pattern):
     """
     Extract eye-tracking data and trial trigger events from event and data frames.
-
-    Args:
-        df_event (pd.DataFrame): Event dataframe (physioevents)
-        df_data (pd.DataFrame): Eye-tracking data with timestamps (physio)
-        onset_pattern (str): Regex pattern to detect the start of trials.
-        offset_pattern (str): Regex pattern to detect the end of trials.
-
-    Returns:
-        tuple: Numpy array of eye-tracking data within the trial period, start time, and end time of the trial.
     """
 
-    # Extract triggers
-    # Initialize arrays to store results
-    import re 
+    import re
     import pandas as pd
     import matplotlib.pyplot as plt
-    
-    time_start_eye = 0
-    time_end_eye = 0
-    # Loop through the 'messages' column to extract the patterns
+    import numpy as np
 
-    for index, row in df_event.iterrows():
+    time_start_eye = None
+    time_end_eye = None
+
+    # --- Extract trigger times ---
+    for _, row in df_event.iterrows():
         message = row['message']
-        
+
         if pd.isna(message):
-            continue  # Skip if NaN
-        
-        # Check for sequence 1 started
+            continue
+
         if re.search(onset_pattern, message):
-            time_start_eye = row['onset']  # Store by run index
-            
-    
-        # Check for sequence 9 stopped
+            time_start_eye = row['onset']
+
         if re.search(offset_pattern, message):
             time_end_eye = row['onset']
-           
 
-    
-    # Filter for only timestamps between first and last trial 
-    eye_data_run = df_data[(df_data['timestamp'] >= time_start_eye) & 
-                    (df_data['timestamp'] <= time_end_eye)]
+    if time_start_eye is None or time_end_eye is None:
+        raise ValueError("Onset or offset trigger not found.")
 
+    # --- Filter eye data ---
+    eye_data_run = df_data[
+        (df_data['timestamp'] >= time_start_eye) &
+        (df_data['timestamp'] <= time_end_eye)
+    ]
 
-    eye_data_run_array = eye_data_run[['timestamp', 'x_coordinate', 'y_coordinate', 'pupil_size']].to_numpy()
+    # --- Build time axis in seconds (trial-relative) ---
+    time_sec = (eye_data_run['timestamp'] - time_start_eye) * 1e-3
 
-    plt_1 = plt.figure(figsize=(15, 6))
-    plt.title("Experiment relevant timeseries")
-    plt.xlabel('x-coordinate', fontweight='bold')
-    plt.plot(eye_data_run_array[:,1])
+    eye_data_run_array = eye_data_run[
+        ['timestamp', 'x_coordinate', 'y_coordinate', 'pupil_size']
+    ].to_numpy()
+
+    # --- Plot ---
+    plt.figure(figsize=(15, 6))
+    plt.plot(time_sec, eye_data_run['x_coordinate'], label='X gaze')
+
+    plt.axvline(0, color='green', linestyle='--', label='Trial onset')
+    plt.axvline(
+        (time_end_eye - time_start_eye) * 1e-3,
+        color='red',
+        linestyle='--',
+        label='Trial offset'
+    )
+
+    plt.xlabel('Time (s)', fontweight='bold')
+    plt.ylabel('X-coordinate')
+    plt.title('Experiment-relevant eye trace')
+    plt.legend()
+    plt.tight_layout()
     plt.show()
 
-
     return eye_data_run_array, time_start_eye, time_end_eye
+
 
 """
 ------------------- Preproc functions --------------------------------------
@@ -303,7 +310,7 @@ def moving_average_smoothing(dataframe, eyetracking_rate, window_duration):
     plt.title("Smoothed timeseries")
     plt.xlabel('x-coordinate', fontweight='bold')
     plt.plot(dataframe['x'])
-    plt.show()
+    #plt.show()
 
     return dataframe
 

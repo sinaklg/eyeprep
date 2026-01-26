@@ -1712,3 +1712,153 @@ def surface_rois_all_categories_plot(data, subject, fig_height, fig_width):
                       template='simple_white')  
     
     return fig 
+
+
+
+def interactive_preproc_plot(eye_data_run, eye_data_run_blinks, eye_data_run_interpolated, eye_data_run_p_normalized, eye_times): 
+
+    import plotly.graph_objects as go
+    import numpy as np
+    from plotly.subplots import make_subplots
+
+
+    stages = {
+        'raw': {
+            'data': eye_data_run[:,1],
+            'name': 'Raw Data',
+            'color': '#ef4444',
+            'description': 'Unprocessed gaze data from eye tracker. Contains noise, drift, and blinks.',
+            'visible': True
+        },
+        'blinks_removed': {
+            'data': eye_data_run_blinks[:,1],
+            'name': 'DVA & Blinks Removed',
+            'color': '#f97316',
+            'description': 'Blink artifacts marked as missing data (NaN). Gaps visible where pupil disappeared.',
+            'visible': False
+        },
+        'interpolated': {
+            'data': eye_data_run_interpolated[:,1],
+            'name': 'Interpolated',
+            'color': '#eab308',
+            'description': 'Missing values filled using linear interpolation. No more gaps in data. Converted to DVA.',
+            'visible': False
+        },
+        'normalized': {
+            'data': eye_data_run_p_normalized,
+            'name': 'Pupil Normalized',
+            'color': '#10b981',
+            'description': 'Data scaled to [-1, 1] and converted to degrees of visual angle. Ready for analysis.',
+            'visible': False
+        }
+    }
+
+    # Create figure
+    fig = go.Figure()
+
+    # Add traces for each stage
+    for stage_id, stage_info in stages.items():
+        fig.add_trace(
+            go.Scatter(
+                x=eye_times,
+                y=stage_info['data'],
+                mode='lines',
+                name=stage_info['name'],
+                line=dict(color=stage_info['color'], width=2.5),
+                visible=stage_info['visible'],
+                hovertemplate='<b>Time:</b> %{x:.2f}s<br><b>Y Gaze:</b> %{y:.2f}°<extra></extra>',
+                connectgaps=False  # Show gaps where blinks are (for blinks_removed stage)
+            )
+        )
+
+    buttons = []
+
+    # Create a button for each stage
+    for i, (stage_id, stage_info) in enumerate(stages.items()):
+        # Create visibility array: only the current stage is visible
+        visibility = [False] * len(stages)
+        visibility[i] = True
+        
+        button = dict(
+            label=stage_info['name'],
+            method='update',
+            args=[
+                {'visible': visibility},
+                {
+                    'title.text': f"<b>{stage_info['name']}</b><br><sub>{stage_info['description']}</sub>",
+                    'title.font.color': stage_info['color']
+                }
+            ]
+        )
+        buttons.append(button)
+
+    # Add "Show All" button
+    visibility_all = [True] * len(stages)
+    show_all_button = dict(
+        label='Show All Stages',
+        method='update',
+        args=[
+            {'visible': visibility_all},
+            {'title.text': '<b>All Preprocessing Stages (Overlaid)</b><br><sub>Compare how each stage transforms the data</sub>',
+             'title.font.color': '#1f1f1f'}
+        ]
+    )
+    buttons.append(show_all_button)
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                type='dropdown',
+                direction='down',
+                x=0.0,
+                y=1.15,
+                showactive=True,
+                buttons=buttons,
+                bgcolor='white',
+                bordercolor='#333',
+                borderwidth=2,
+                font=dict(size=12),
+                active=0  # Start with "Raw Data" visible
+            )
+        ],
+        title={
+            'text': f"<b>Raw Data</b><br><sub>Unprocessed gaze data from eye tracker. Contains noise, drift, and blinks.</sub>",
+            'font': {'size': 18, 'color': '#ef4444', 'family': 'Arial'},
+            'x': 0.5,
+            'xanchor': 'center'
+        },
+        height=700,
+        width=1300,
+        hovermode='x unified',
+        template='plotly_white',
+        font=dict(size=12, family='Arial', color='#1f1f1f'),
+        legend=dict(
+            x=1.02,
+            y=1,
+            bgcolor='rgba(255,255,255,0.95)',
+            bordercolor='#000000',
+            borderwidth=1,
+            font=dict(size=11)
+        ),
+        xaxis=dict(
+            title="Time (seconds)",
+            showgrid=True,
+            gridwidth=1,
+            gridcolor='#e0e0e0',
+            zeroline=False
+        ),
+        yaxis=dict(
+            title="Y Position (degrees of visual angle)",
+            showgrid=True,
+            gridwidth=1,
+            gridcolor='#e0e0e0',
+            zeroline=True,
+            zerolinewidth=1,
+            zerolinecolor='#cccccc'
+        ),
+        margin=dict(t=150, b=80, l=80, r=150)
+    )
+
+    # Display the figure
+    fig.show()
+
