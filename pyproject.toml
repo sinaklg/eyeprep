@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "eyeprep"
+dynamic = ["version"]
+description = 'Standardized preprocessing pipeline for BIDS-formatted eye-tracking data.'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "BSD-3-Clause"
+keywords = []
+authors = [{ name = "Sina King", email = "example@email.com" }]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = ["eye2bids"]
+
+[project.urls]
+Documentation = "https://github.com/sinaklg/eyeprep#readme"
+Issues = "https://github.com/sinaklg/eyeprep/issues"
+Source = "https://github.com/sinaklg/eyeprep"
+
+[tool.hatch.version]
+path = "eyeprep/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = ["mypy>=1.0.0"]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:eyeprep tests}"
+
+[tool.coverage.run]
+source_pkgs = ["eyeprep", "tests"]
+branch = true
+parallel = true
+omit = ["eyeprep/__about__.py"]
+
+[tool.coverage.paths]
+eyeprep = ["eyeprep", "*/eyeprep/eyeprep"]
+tests = ["tests", "*/eyeprep/tests"]
+
+[tool.coverage.report]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
