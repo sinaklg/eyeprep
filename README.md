@@ -13,15 +13,63 @@ Version 0.01
 
 Install SR reseach developers kit: https://www.sr-research.com/support/docs.php?topic=linuxsoftware
 
-```
-git clone https://github.com/bids-standard/eye2bids.git
+## Developer setup with uv
 
+### One-time setup
+
+- Ensure uv is installed (see https://github.com/astral-sh/uv)
+
+- Clone the repository
+
+- Create a virtual environment:
+```
+uv venv .venv
 ```
 
+- Activate the created virtual environment
 ```
-cd eye2bids
-pip install .
+source .venv/bin/activate
 ```
+
+- Sync dependencies:
+```
+uv sync --all-extras
+```
+This ensures everyone has matching versions as declared in `pyproject.toml`.
+
+#### Adding dependencies
+Use `uv add` to manage dependencies in `pyproject.toml`:
+- Runtime dependency:
+```
+uv add <package-name>
+```
+- Dev-only dependency:
+```
+uv add --dev <package-name>
+```
+This keeps `dependencies` and `optional-dependencies.dev` up to date automatically.
+
+#### Current declared dependencies
+- Runtime: `eye2bids` (installed from GitHub via VCS URL)
+- Dev: `pytest`, `ruff`, `mypy`
+
+#### Typical developer workflow
+1) Activate venv:
+```
+source .venv/bin/activate
+```
+2) Sync environment:
+```
+uv sync --all-extras
+```
+3) Run tests and linters:
+```
+pytest
+ruff check .
+mypy .
+```
+4) Make changes to `eyeprep` code and re-run tests; editable installs are handled automatically by `uv sync`.
+
 
 ## Why This Exists
 
