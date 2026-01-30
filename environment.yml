@@ -1,0 +1,33 @@
+# Conda/Mamba environment for eyeprep development and runtime
+# Usage:
+#   mamba env create -f eyeprep/environment.yml
+#   mamba activate eyeprep
+#   (run from the repository root so the editable install `-e .` resolves correctly)
+#
+# Update environment after changes:
+#   mamba env update -f eyeprep/environment.yml --prune
+#
+# Notes:
+# - eye2bids is installed via a VCS URL (GitHub).
+# - eyeprep is installed in editable mode so local code changes are immediately reflected.
+# - Add/remove conda dependencies below as the project evolves.
+
+name: eyeprep
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.11
+  - pip
+
+  # Developer tools (optional but recommended)
+  - pytest
+  - mypy
+  - ruff
+
+  # Pip-managed packages (installed inside this conda environment)
+  - pip:
+      # Install eyeprep in editable mode from the repository root
+      - -e .
+      # Main external dependency installed from GitHub
+      - git+https://github.com/bids-standard/eye2bids.git

@@ -8,11 +8,12 @@ dynamic = ["version"]
 description = 'Standardized preprocessing pipeline for BIDS-formatted eye-tracking data.'
 readme = "README.md"
 requires-python = ">=3.8"
-license = "BSD-3-Clause"
+license = "MIT"
 keywords = []
-authors = [{ name = "Sina King", email = "example@email.com" }]
+authors = [{ name = "Sina Kling", email = "example@email.com" }]
 classifiers = [
   "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
@@ -22,7 +23,7 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["eye2bids"]
+dependencies = ["eye2bids @ git+https://github.com/bids-standard/eye2bids.git"]
 
 [project.urls]
 Documentation = "https://github.com/sinaklg/eyeprep#readme"
@@ -36,6 +37,19 @@ path = "eyeprep/__about__.py"
 extra-dependencies = ["mypy>=1.0.0"]
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:eyeprep tests}"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pytest>=7.0",
+  "ruff>=0.3",
+  "mypy>=1.5"
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+lint = "ruff check {args:.}"
+format = "ruff format {args:.}"
+type-check = "mypy {args:eyeprep tests}"
 
 [tool.coverage.run]
 source_pkgs = ["eyeprep", "tests"]
