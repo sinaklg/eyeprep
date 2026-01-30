@@ -2,45 +2,49 @@ def extract_data(main_dir, project_dir, subject, task, ses, runs, eye, file_type
     """
     Load and process eye-tracking data and associated metadata from TSV and JSON files.
 
-    Args:
-        main_dir (str): Directory containing the data.
-        subject (str): Subject ID.
-        task (str): Task name.
-        ses (str): Session identifier.
-        runs (int): Number of runs.
-        eye (str): Eye being tracked (e.g., 'left', 'right').
-        file_type (str): Type of the file (e.g., 'recording').
-
     Returns:
-        list: A list of pandas dataframes, each containing the data for one run, with columns defined by the JSON metadata.
+        df_runs (list): List of pandas DataFrames, one per run.
+        file_names (list): List of TSV file names (without path), one per run.
     """
-
-    import json 
+    import json
     import pandas as pd
-    df_runs = []
-    for run in range(runs):
-        json_file_path = f'{main_dir}/{project_dir}/{subject}/{ses}/func/{subject}_{ses}_task-{task}_run-0{run+1}_recording-{eye}_{file_type}.json' #could be eyetrack 
-        tsv_file_path = f"{main_dir}/{project_dir}/{subject}/{ses}/func/{subject}_{ses}_task-{task}_run-0{run+1}_recording-{eye}_{file_type}.tsv.gz" #could be eyetrack instead of eyeData
-        
+    import os
 
-        with open(json_file_path, 'r') as file:
+    df_runs = []
+    file_names = []
+
+    for run in range(runs):
+        base_name = (
+            f"{subject}_{ses}_task-{task}_run-0{run+1}_"
+            f"recording-{eye}_{file_type}"
+        )
+
+        json_file_path = os.path.join(
+            main_dir, project_dir, subject, ses, "func", base_name + ".json"
+        )
+        tsv_file_path = os.path.join(
+            main_dir, project_dir, subject, ses, "func", base_name + ".tsv.gz"
+        )
+
+        with open(json_file_path, "r") as file:
             json_data = json.load(file)
 
-        # Extract column names from the JSON
-        column_names = json_data['Columns']
+        column_names = json_data["Columns"]
 
         df = pd.read_csv(
-            tsv_file_path, 
-            compression='gzip', 
-            delimiter='\t', 
-            header=None,  
-            names=column_names,  # Use the column names from JSON
-            na_values='n/a'  # Treat 'n/a' as NaN
+            tsv_file_path,
+            compression="gzip",
+            delimiter="\t",
+            header=None,
+            names=column_names,
+            na_values="n/a",
         )
 
         df_runs.append(df)
+        file_names.append(os.path.basename(tsv_file_path))
 
-    return df_runs
+    return df_runs, file_names
+
 
 def extract_eye_data_and_triggers(df_event, df_data, onset_pattern, offset_pattern):
     """
