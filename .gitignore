@@ -1,0 +1,89 @@
+# ---- OS / Editor files ----
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.orig
+*.bak
+
+# VS Code / JetBrains
+.vscode/
+*.code-workspace
+.idea/
+
+# direnv / local env helpers
+.direnv/
+
+# ---- Python: bytecode / caches ----
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ---- Python: virtual environments ----
+.venv/
+venv/
+env/
+ENV/
+
+# dotenv files (keep if you intentionally commit)
+.env
+.env.*
+
+# ---- Python: packaging / distribution ----
+build/
+dist/
+wheels/
+*.egg-info/
+.eggs/
+*.egg
+MANIFEST
+
+# ---- Python: test / coverage artifacts ----
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+nosetests.xml
+junit*.xml
+test-results.xml
+.pytest_cache/
+
+# ---- Type checkers / linters ----
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+.pyrightcache/
+
+# ---- Notebooks ----
+.ipynb_checkpoints/
+
+# ---- Sphinx / MkDocs / docs ----
+docs/_build/
+_build/
+site/
+
+# ---- Cython ----
+cython_debug/
+
+# ---- Logs / profiling / temp ----
+*.log
+*.tmp
+*.temp
+*.pid
+profile*.prof
+
+# ---- Benchmarks ----
+.benchmarks/
+
+# ---- uv-specific notes ----
+# uv creates a lock file at the repository root:
+#   uv.lock
+# For applications, consider committing uv.lock.
+# For libraries, you may choose to ignore it. If so, uncomment the line below.
+# uv.lock
+
+# uv typically uses .venv/ for virtual environments (already ignored above).
