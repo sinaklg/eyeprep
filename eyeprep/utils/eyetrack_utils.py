@@ -287,7 +287,7 @@ def downsample_to_targetrate(original_data, eyetracking_rate, target_rate):
     return downsampled_data
 
 
-def moving_average_smoothing(dataframe, eyetracking_rate, window_duration): 
+def moving_average_smoothing(df, eyetracking_rate, window_duration_ms): 
     """
     Apply moving average smoothing to eye-tracking data using a specified window size.
 
@@ -299,41 +299,48 @@ def moving_average_smoothing(dataframe, eyetracking_rate, window_duration):
     Returns:
         pd.DataFrame: Smoothed data with rolling averages applied to X and Y coordinates.
     """
-    import matplotlib.pyplot as plt
-    
-    # window duration to sec 
-    window_duration = window_duration / 1000
-    window_size = int(eyetracking_rate * window_duration)
-    
+    window_size = int(eyetracking_rate * (window_duration_ms / 1000))
 
-    # Calculate SMA
-    dataframe['x'] = dataframe['x'].rolling(window=window_size).mean()
-    dataframe['y'] = dataframe['y'].rolling(window=window_size).mean()
+    smoothed = df.copy()
+    smoothed['x'] = (
+        df['x']
+        .rolling(window=window_size, center=True)
+        .mean()
+    )
+    smoothed['y'] = (
+        df['y']
+        .rolling(window=window_size, center=True)
+        .mean()
+    )
 
-    plt_2 = plt.figure(figsize=(15, 6))
-    plt.title("Smoothed timeseries")
-    plt.xlabel('x-coordinate', fontweight='bold')
-    plt.plot(dataframe['x'])
-    #plt.show()
+    return smoothed
 
-    return dataframe
 
-def gaussian_smoothing(df, column, sigma):
+#TODO adapt script again
+def gaussian_smoothing(df, sigma, columns = ['x', 'y']):
     """
-    Apply Gaussian smoothing to a specified column in a dataframe.
+    Apply Gaussian smoothing to specified columns in a dataframe.
 
     Args:
-        df (pd.DataFrame): Dataframe containing the eye-tracking data.
-        column (str): Column name of the data to smooth.
+        df (pd.DataFrame): DataFrame containing eye-tracking data.
+        columns (list or tuple of str): Column names to smooth (e.g., ['x', 'y']).
         sigma (float): Standard deviation of the Gaussian kernel.
 
     Returns:
-        np.array: Smoothed data.
+        pd.DataFrame: A copy of the dataframe with smoothed columns.
     """
-
-    # Apply Gaussian smoothing with convolution
     from scipy.ndimage import gaussian_filter1d
-    return gaussian_filter1d(df[column], sigma=sigma)
+
+    df_smoothed = df.copy()
+
+    for col in columns:
+        df_smoothed[col] = gaussian_filter1d(
+            df_smoothed[col].to_numpy(),
+            sigma=sigma
+        )
+
+    return df_smoothed
+
 
 
 
