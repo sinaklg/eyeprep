@@ -5,8 +5,9 @@
 
 Standardized preprocessing pipeline for BIDS-formatted eye-tracking data.
 
+Authors: Sina KLING, Marianne DUYCK, Giorgio MARINATO, Martin SZINTE
 -------
-Version 0.01
+Version 0.02
 
 
 ## Installation steps (dependencies)
@@ -41,20 +42,11 @@ eyeprep takes BIDS-formatted eye-tracking data through a series of validated pre
 ### Preprocessing Steps
 - **Blink Removal** → **Interpolation** → **Normalization** → **Drift Correction** → **Smoothing** → **Downsampling**
 
-### Quality Assessment
-- Extracts saccades using 2D velocity algorithm
-- Generates prediction models for task performance
-- Produces individual and group-level quality metrics
-
 [Learn more about each step →](docs/preprocessing.md)
 
-
-## Documentation (TODO)
-
-- [Getting Started Guide](docs/getting_started.md)
-- [Preprocessing Options](docs/preprocessing.md)
-- [Configuration Files](docs/configuration.md)
-- [Tutorial Notebooks](examples/)
+### Quality Assessment
+- produces individual quality metrics : Proportion of missing data, gaze overview relative to screen, proportion of valid data after blink removal (inkl. blink distribution plot), noise quantification 
+- Saccade detection 
 
 ## 🤝 Contributing
 
@@ -63,25 +55,14 @@ We welcome contributions! This project is part of [Brainhack 2026](https://brain
 - See our [Contributing Guide](CONTRIBUTING.md)
 - Join the discussion on [GitHub Discussions](https://github.com/sinaklg/eyeprep/discussions)
 
-
-## 🏆 Brainhack Project
-
-This tool is being developed as part of Brainhack 2026. Check out the [project page](https://brainhack-marseille.github.io/) to get involved!
-
-**Skills we need:**
-- Python development
-- Documentation writing
-- Data visualization
-- DevOps (Docker, CI/CD)
-
 ## Citation
 
 If you use this tool, please cite:
-- Our BEP20 paper: [github_discussion] (https://github.com/bids-standard/bids-specification/discussions/2218#discussioncomment-15164225)
+- Our BEP20 paper: [BIORXIV] (https://www.biorxiv.org/content/10.64898/2026.02.03.703514v1)
 
 
 ## 📧 Contact
 
 - Project Lead: [Sina Kling] - [@github](https://github.com/sinaklg) - email sina.kling@univ-amu.fr
 - Issues: [GitHub Issues](https://github.com/sinaklg/eyeprep/issues)
-- Chat: [Mattermost](link)
+- Chat: [Brainhack Mattermost](https://mattermost.brainhack.org/brainhack/channels/bhg26-marseille-eyeprep)
