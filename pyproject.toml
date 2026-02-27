@@ -5,14 +5,20 @@ description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Sina Kling", email = "sina.kling@univ-amu.fr" }]
 requires-python = ">=3.12"
-dependencies = ["eye2bids @ git+https://github.com/bids-standard/eye2bids.git"]
+dependencies = [
+    "eye2bids @ git+https://github.com/bids-standard/eye2bids.git", 
+                 "pybids>=0.16.0"
+]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0", "ruff>=0.3", "mypy>=1.5"]
+dev = ["pytest>=7.0", "ruff>=0.3", "mypy>=1.5","pybids>=0.16.0"]
 
 [project.scripts]
-eyeprep = "eyeprep:main"
+eyeprep = "eyeprep.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.9.7,<0.10.0"]
 build-backend = "uv_build"
+
+[tool.uv.build]
+src-dir = "src"
