@@ -2,45 +2,63 @@ from pathlib import Path
 from datetime import datetime
 import sys
 import getpass
-from bids import BIDSLayout
+from collections import defaultdict
 
-# import the version
+from bids import BIDSLayout
 from . import __version__
 
-from bids_validator import BIDSValidator
 
-def run_pipeline(bids_path: Path, subject: str, output_file: Path, skip_bids_validation: bool = False):
+
+# Data collection
+def collect_tasks(layout: BIDSLayout, subject: str) -> dict:
     """
-    Generate a simple HTML summary report for a subject.
-    Currently skeleton: only placeholder counts and tasks.
+    Collect eye-tracking files and group by task.
+
+    Returns:
+    {
+        task_name: [
+            {"run": int, "eye": str, "file": str}
+        ]
+    }
     """
-    if not bids_path.exists():
-        raise FileNotFoundError(f"BIDS path does not exist: {bids_path}")
-    
-    # --- Metadata ---
-    command_used = " ".join(sys.argv)
-    date_run = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    user = getpass.getuser()
-
-    # --- BIDS validation ---
-    print("BIDS validation:", "SKIPPED" if skip_bids_validation else "ENABLED")
-
-    layout = BIDSLayout(
-        str(bids_path),
-        validate=not skip_bids_validation,
+    files = layout.get(
+        subject=subject,
+        extension="tsv.gz",
+        return_type="filename",
     )
 
-    bids_validation_status = "Skipped" if skip_bids_validation else "Performed"
+    tasks = defaultdict(list)
 
-    # --- Placeholders for now ---
-    #TODO use pybids to find them 
-    tasks = {
-        "SacLoc": 2,
-        "SacVELoc": 2,
-        "pMF": 5,
-    }
-    # --- Generate HTML ---
-    html_content = f"""
+    for f in files:
+        entities = layout.parse_file_entities(f)
+
+        task = entities.get("task", "unknown")
+        run = entities.get("run", 1)
+
+        # ---- Eye detection (heuristic for now) ----
+        fname = Path(f).name.lower()
+
+        if "eye1" in fname or "left" in fname:
+            eye = "left"
+        elif "eye2" in fname or "right" in fname:
+            eye = "right"
+        else:
+            eye = "unknown"
+
+        tasks[task].append(
+            {
+                "run": run,
+                "eye": eye,
+                "file": Path(f).name,
+            }
+        )
+
+    return dict(tasks)
+
+
+# Report
+def create_summary_report(subject: str, tasks: dict, metadata: dict) -> str:
+    html = f"""
     <html>
     <head>
         <title>Eyeprep report for sub-{subject}</title>
@@ -60,28 +78,70 @@ def run_pipeline(bids_path: Path, subject: str, output_file: Path, skip_bids_val
             <li>Subject ID: {subject}</li>
         </ul>
 
-        <h2>Tasks (eye-tracking only)</h2>
+        <h2>Tasks (eye-tracking)</h2>
         <ul>
     """
-    for task_name, runs in tasks.items():
-        html_content += f"            <li>Task: {task_name} ({runs} runs)</li>\n"
 
-    html_content += f"""
+    if tasks:
+        for task, runs in tasks.items():
+            html += f"<li>Task: {task} ({runs} runs)</li>\n"
+    else:
+        html += "<li>No eye-tracking files found</li>\n"
+
+    html += f"""
         </ul>
+
         <div class="metadata">
-            <p>BIDS validation: {bids_validation_status}</p>
-            <p>Eyeprep version: {__version__}</p>
-            <p>Command used: {command_used}</p>
-            <p>Date run: {date_run}</p>
-            <p>User: {user}</p>
+            <p>BIDS validation: {metadata['bids_validation']}</p>
+            <p>Eyeprep version: {metadata['version']}</p>
+            <p>Command used: {metadata['command']}</p>
+            <p>Date run: {metadata['date']}</p>
+            <p>User: {metadata['user']}</p>
         </div>
     </body>
     </html>
     """
 
-    # Ensure parent folder exists
-    output_file.parent.mkdir(parents=True, exist_ok=True)
+    return html
 
-    # Write the report
+
+
+# Main pipeline
+def run_pipeline(
+    bids_path: Path,
+    subject: str,
+    output_file: Path,
+    skip_bids_validation: bool = False,
+):
+    if not bids_path.exists():
+        raise FileNotFoundError(f"BIDS path does not exist: {bids_path}")
+
+    # --- Metadata ---
+    metadata = {
+        "command": " ".join(sys.argv),
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "user": getpass.getuser(),
+        "version": __version__,
+        "bids_validation": "Skipped" if skip_bids_validation else "Performed",
+    }
+
+    # --- BIDS layout (inline, no abstraction) ---
+    print("BIDS validation:", "SKIPPED" if skip_bids_validation else "ENABLED")
+
+    layout = BIDSLayout(
+        str(bids_path),
+        validate=not skip_bids_validation,
+    )
+
+    # --- Collect data ---
+    tasks = collect_tasks(layout, subject)
+    print("Detected tasks:", tasks)
+
+    # --- Generate report ---
+    html_content = create_summary_report(subject, tasks, metadata)
+
+    # --- Write output ---
+    output_file.parent.mkdir(parents=True, exist_ok=True)
     output_file.write_text(html_content)
+
     print(f"Report written to {output_file}")

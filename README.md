@@ -14,6 +14,14 @@ Version 0.02
 
 Install SR reseach developers kit: https://www.sr-research.com/support/docs.php?topic=linuxsoftware
 
+## User installation 
+
+```
+conda create -n eyeprep python=3.12
+conda activate eyeprep
+pip install git+https://github.com/sinaklg/eyeprep.git
+```
+
 ## Developer setup with uv
 
 ### One-time setup
