@@ -20,5 +20,5 @@ eyeprep = "eyeprep.cli:main"
 requires = ["uv_build>=0.9.7,<0.10.0"]
 build-backend = "uv_build"
 
-[tool.uv.build]
-src-dir = "src"
+[tool.uv.build-backend]
+module-root = "src"
