@@ -9,9 +9,8 @@ dependencies = [
     "eye2bids @ git+https://github.com/bids-standard/eye2bids.git", 
                  "pybids>=0.16.0"
 ]
-
-[project.optional-dependencies]
-dev = ["pytest>=7.0", "ruff>=0.3", "mypy>=1.5","pybids>=0.16.0"]
+[dependency-groups]
+dev = ["pytest>=7.0", "ruff>=0.3", "mypy>=1.5"]
 
 [project.scripts]
 eyeprep = "eyeprep.cli:main"
